@@ -1,0 +1,3 @@
+"0","library(rethinking)"
+"0","data(homeworkch3)"
+"0","sample_size = 10000"

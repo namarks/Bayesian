@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "data {\n    int<lower=0> J;          // number of schools \n    real y[J];               // estimated treatment effects\n    real<lower=0> sigma[J];  // s.e. of effect estimates \n}\nparameters {\n    real mu; \n    real<lower=0> tau;\n    vector[J] eta;\n}\ntransformed parameters {\n    vector[J] theta;\n    theta = mu + tau * eta;\n}\nmodel {\n    target += normal_lpdf(eta | 0, 1);\n    target += normal_lpdf(y | theta, sigma);\n}\n",
+    "created" : 1503942022924.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "468781990",
+    "id" : "D14C3DC3",
+    "lastKnownWriteTime" : 1503942660,
+    "last_content_update" : 1503942660446,
+    "path" : "~/Desktop/R/Bayesian/bayesian multilevel learning/schools.stan",
+    "project_path" : "bayesian multilevel learning/schools.stan",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "stan"
+}

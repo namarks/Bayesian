@@ -1,0 +1,148 @@
+html { font-size: 12px; }
+
+.navbar-brand {
+  font-family: FjallaOne;
+  text-transform: uppercase;
+  font-size: 24px;
+
+}
+
+.storyboard-nav {
+  font-family: Raleway;
+  text-transform: uppercase;
+  font-size: 24px;
+
+}
+
+header {
+  font-family: FjallaOne;
+  text-transform: uppercase;
+  font-size: 16px;
+}
+
+h1 {
+  font-family: FjallaOne;
+  text-transform: uppercase;
+  color: #000000;
+  font-style: normal;
+}
+.title-slide hgroup h1 {
+  font-family: FjallaOne;
+  text-transform: uppercase;
+}
+h2 {
+  font-style: normal;
+  font-family: Raleway;
+  text-transform: uppercase;
+  font-size: 16px;
+}
+h3 {
+  font-style: normal;
+  font-family: FjallaOne;
+  text-transform: uppercase;
+}
+h4 {
+  font-style: normal;
+  font-family: Raleway;
+  text-transform: uppercase;
+}
+
+
+body {
+  font-family: "Helvetica Neue", et-book, Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
+  background-color: #ffffff;
+}
+
+
+@media screen {
+    header.left, header.right, footer.center{
+        display: none; /* Hide from screen */
+    }
+}
+
+@media print {
+    header.left {
+        position: fixed;
+        top: 0;
+        left: 0;
+        color: white;
+    }
+    header.right {
+        position: fixed;
+        top: 0;
+        right: 0;
+        color: white;
+    }
+}
+
+.elicit-header {
+    font-family: FjallaOne;
+    text-transform: uppercase;
+    font-size: 24px;
+    background: #FFF;
+    color: #77C4C5;
+    top: 0;
+    left: 0;
+    position: fixed;
+    text-align: center;
+    width: 100%;
+    right: 0;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+@media screen {
+  .elicit-header {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #D8DBDB;
+  }
+}
+@media print {
+  .elicit-header {
+    text-align: right;
+    color: #000;
+    background-color: transparent;
+    padding-top:0;
+    padding-bottom:0;
+    font-size: 16px;
+  }
+}
+.elicit-footer {
+    font-family: "Helvetica Neue", "Arial";
+    font-size: 10px;
+    background: #404040;
+    color: #BFBFBF;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    text-align: center;
+    width: 100%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+@media print {
+  .elicit-footer {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+}
+
+.elicitlogo {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+.elicitlogo img {
+  max-height:30px;
+}
+@media print {
+  .elicitlogo {
+    top:0;
+    left:0;
+  }
+  .elicitlogo img {
+    max-height:16px;
+  }
+}

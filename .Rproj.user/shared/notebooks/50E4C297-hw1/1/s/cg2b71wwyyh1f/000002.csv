@@ -1,0 +1,7 @@
+"0","b01 <- birth2[birth1==0]"
+"0","set.seed(20170428)  "
+"0","model <- model %>% "
+"0","  mutate(b01sim = rbinom(sample_size, length(b01), prob = sample_qa))"
+"0","ggplot(model, aes(x=b01sim)) +"
+"0","  geom_density() +"
+"0","  geom_vline(xintercept = sum(b01), color = ""red"")"

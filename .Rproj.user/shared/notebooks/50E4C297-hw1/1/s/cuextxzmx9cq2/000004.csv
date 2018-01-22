@@ -1,0 +1,8 @@
+"0","sample_size <- 10000"
+"0","model <- data_frame(p_grid = seq(0,1,length.out=sample_size)"
+"0","                    , prior = rep(1, sample_size))"
+"0","model <- model %>% "
+"0","  mutate(likelihood = dbinom(sum(births$boy), size = nrow(births), prob = p_grid)"
+"0","         , posterior = prior*likelihood / sum(prior*likelihood))"
+"0","ggplot(model, aes(p_grid, posterior)) +"
+"0","  geom_line()"

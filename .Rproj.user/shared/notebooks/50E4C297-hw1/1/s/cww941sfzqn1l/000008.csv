@@ -1,0 +1,2 @@
+"0","w <- rbinom(1e4, size=15, prob=samples)"
+"0","simplehist(w)"

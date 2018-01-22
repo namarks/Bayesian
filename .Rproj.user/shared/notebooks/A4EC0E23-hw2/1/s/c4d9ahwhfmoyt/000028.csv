@@ -1,0 +1,2 @@
+"0","d <- rnorm(sample_size, mean = boys_mean, sd = boys_sd)"
+"0","hist(d)"

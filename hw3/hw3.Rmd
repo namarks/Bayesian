@@ -1,0 +1,46 @@
+---
+# title: Template Report
+page_header: true
+header_title: Week 3 Homework
+legal: "&copy; 2017 All rights reserved. Proprietary and confidential, Elicit LLC."
+output:
+  bookdown::tufte_html2:
+    number_sections: false
+    toc: false
+    template: elicit_template.html
+css: elicit_report_template.css
+---
+
+```{r setup, include=FALSE}
+#NOTE: bookdown and tufte packages must be installed to knit this template
+# install.packages('bookdown')
+# install.packages('tufte')
+
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(rethinking))
+suppressPackageStartupMessages(library(plotly))
+library(knitr)
+options(scipen = 9)
+knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tufte'), 
+                      comment = NULL)
+options(htmltools.dir.version = FALSE)
+old <- theme_get()
+the_new <- old %+% theme(text = element_text(family = "HelveticaNeue-Light",
+                                             size = 10),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+  panel.grid.major = element_line(colour = "grey"))
+theme_set(the_new)
+```
+
+Get the data
+```{r load data}
+library(rethinking)
+data(Howell1)
+d2 <- Howell1 %>% filter(age >= 18)
+```
+
+
+
+
+<!-- Bottom gutter to keep content above footer  --> 
+<div id="bottom-gutter" style="height: 60px;"></div>

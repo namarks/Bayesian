@@ -1,0 +1,5 @@
+"0","ggplot(model) +"
+"0","  geom_density(aes(x=sample_grid, color = ""blue"")) +"
+"0","  geom_density(aes(x=sample_qa, color = ""red"")) +"
+"0","  scale_color_manual(values = c(""red"",""blue"")"
+"0","                     , labels = c(""Grid"",""Quadratic""))"

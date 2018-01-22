@@ -1,0 +1,121 @@
+---
+# title: Template Report
+page_header: true
+header_title: Week 2 Homework
+legal: "&copy; 2017 All rights reserved. Proprietary and confidential, Elicit LLC."
+output:
+  bookdown::tufte_html2:
+    number_sections: false
+    toc: false
+    template: elicit_template.html
+css: elicit_report_template.css
+---
+
+```{r setup, include=FALSE}
+#NOTE: bookdown and tufte packages must be installed to knit this template
+# install.packages('bookdown')
+# install.packages('tufte')
+
+pacman::p_load(tufte, knitr, tidyverse, lubridate, plotly, scales, 
+               xtable, magrittr, rstudioapi, stringr, Hmisc, eboxr) 
+options(scipen = 9)
+
+# invalidate cache when the tufte version changes
+knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tufte'), 
+                      echo=FALSE, cache = TRUE, comment = NULL,
+                      dev = "cairo_pdf")
+options(htmltools.dir.version = FALSE)
+old <- theme_get()
+the_new <- old %+% theme(text = element_text(family = "HelveticaNeue-Light",
+                                             size = 10),
+    panel.background = element_rect(fill = "transparent",colour = NA),
+  panel.grid.major = element_line(colour = "grey"))
+theme_set(the_new)
+options(xtable.comment = FALSE)
+options(xtable.booktabs = TRUE)
+lpercent <- function(x) Hmisc::latexTranslate(percent(x))
+ldollar <- function(x) Hmisc::latexTranslate(dollar(x))
+discount_rate <- (1.12)^(3/2)-1
+xtable <- function(x, ...) {
+  for (i in which(sapply(x, function(y) !all(is.na(match(c("POSIXct","Date"),class(y))))))) x[[i]] <- as.character(x[[i]])
+  xtable::xtable(x, ...)
+}
+cap_all_words <- function(name) {sapply(name, function(x) {
+  paste(sapply(strsplit(x, ' '), capitalize), collapse=' ')
+})}
+rprint <- function(tbldf,dollars=c(),xtable_args = list(), NA.string="NA", ...) {
+  if(rstudioapi::isAvailable()) {return(print(tbldf))}
+  xt <- do.call(xtable, c(list(x=tbldf), xtable_args))
+  if(length(dollars)>0) colnames(xt)[dollars] <- paste(colnames(xt)[dollars],"($)")
+  colnames(xt) <- cap_all_words(str_replace_all(colnames(xt),'_',' '))
+  print(xt,include.rownames=FALSE,NA.string=NA.string,
+      type='latex',
+      format.args=list(big.mark=","), ...)
+  invisible()
+}
+```
+
+```{r load data, include = FALSE}
+library(rethinking)
+data(homeworkch3)
+sample_size = 10000
+```
+
+# 1. Back to births
+## (a) Compute p-value for null hypothese that the probability of a boy birth is 0.5
+
+There were 111 male births out of 200 observations. The null hypothesis of p = 0.5 would correspond to 100 boy birhts. Assuming this is true, we  want to calculate the area in tail of the null distribution that's beyond this point estimate (i.e. >111)
+```{r 1a}
+p <- dbinom(x=111:200, size = 200, prob=.5)
+ggplot(NULL, aes(111:200, y=p)) + 
+  geom_point()
+```
+We find that almost 7% of the area under the curve remains in the tail, so using the standard 5% p-value cutoff we would not reject the hypothesis that p = 0.5 
+```{r}
+sum(p)
+```
+
+## (b) how does p-value compare to bayesian analysis from last week?
+```{r}
+set.seed(20170428)
+boys_qa <- rethinking::map(
+    alist(
+        boys ~ dbinom(size=nrow(births),prob = pr.boy) ,  # binomial likelihood
+        pr.boy ~ dunif(0,1)    # uniform prior
+), data=list(boys = sum(births$boy)) )
+
+boys_mean <- precis(boys_qa)@output$Mean
+boys_sd <- precis(boys_qa)@output$StdDev
+
+precis(boys_qa)@output
+
+d <- rnorm(sample_size, mean = boys_mean, sd = boys_sd)
+hist(d)
+
+length(d[d >= 111/200]) / length(d)
+```
+
+# 2. Casino scenario: when Pr(Ho|D) != P
+## (a) p-value of null [a fair die]
+```{r}
+p <- dbinom(x=18:65,size=65,p=1/6)
+plot(p)
+sum(p)
+
+```
+Based on the p-vale of 0.0175 it's highly unlikely the die is fair. But....
+
+##(b) bayesian calculation of fairness (grid approach)
+```{r}
+model <- seq(0,1,length.out = 100)
+prior <- rep(.5,100)
+likelihood <- dbinom(x=18, size=65, prob=model)
+posterior <- prior*likelihood / sum(prior*likelihood)
+ggplot(NULL, aes(model, posterior)) + geom_point()
+```
+Here we are given additional information that a loaded die will come up as 1 50% of the time. Given this information, it's far more likely the die is NOT loaded than it is, as the MLE is around 25%, which is much closer to 1/6 than 1/2
+
+
+
+<!-- Bottom gutter to keep content above footer  --> 
+<div id="bottom-gutter" style="height: 60px;"></div>

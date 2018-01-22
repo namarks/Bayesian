@@ -1,0 +1,5 @@
+"0","model <- seq(0,1,length.out = 100)"
+"0","prior <- rep(.5,100)"
+"0","likelihood <- dbinom(x=18, size=65, prob=model)"
+"0","posterior <- prior*likelihood / sum(prior*likelihood)"
+"0","ggplot(NULL, aes(model, posterior)) + geom_point()"

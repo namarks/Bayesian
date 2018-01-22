@@ -1,0 +1,7 @@
+"0","p_grid <- seq(from=0,to=1,length.out = 1000)"
+"0","prior <- rep(1,1000)"
+"0","likelihood <- dbinom(6, size=9, prob=p_grid)"
+"0","posterior <- likelihood*prior"
+"0","posterior <- posterior/sum(posterior)"
+"0","set.seed(100)"
+"0","samples <- sample(p_grid, prob=posterior, size=10000, replace=TRUE)"

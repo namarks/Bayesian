@@ -1,0 +1,5 @@
+"0","data(homeworkch3)"
+"0","boy_births <- sum(birth1) + sum(birth2)"
+"0","births <- data_frame(boy = c(birth1, birth2)"
+"0","                     , birth_order = c(rep(1,length(birth1))"
+"0","                                       , rep(2,length(birth2))))"

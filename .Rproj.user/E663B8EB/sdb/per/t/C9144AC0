@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(rstan)\nsetwd(paste(getwd(),\"bayesian multilevel learning\",sep = '/'))\n\n\n# Data --------------------------------------------------------------------\nschools_data <- list(\n    J = 8, \n    y = c(28,  8, -3,  7, -1,  1, 18, 12),\n    sigma = c(15, 10, 16, 11,  9, 11, 10, 18)\n)\n\n\n\n# Fit ---------------------------------------------------------------------\nfit1 <- stan(\n    file = \"schools.stan\",  # Stan program\n    data = schools_data,    # named list of data\n    chains = 4,             # number of Markov chains\n    warmup = 1000,          # number of warmup iterations per chain\n    iter = 2000,            # total number of iterations per chain\n    cores = 2,              # number of cores (using 2 just for the vignette)\n    refresh = 1000          # show progress every 'refresh' iterations\n)",
+    "created" : 1503941936681.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "974815190",
+    "id" : "C9144AC0",
+    "lastKnownWriteTime" : 1503942667,
+    "last_content_update" : 1503942667238,
+    "path" : "~/Desktop/R/Bayesian/bayesian multilevel learning/schools.R",
+    "project_path" : "bayesian multilevel learning/schools.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

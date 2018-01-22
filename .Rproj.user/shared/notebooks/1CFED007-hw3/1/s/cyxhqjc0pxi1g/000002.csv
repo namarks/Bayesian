@@ -1,0 +1,3 @@
+"0","library(rethinking)"
+"0","data(Howell1)"
+"0","d2 <- Howell1 %>% filter(age >= 18)"

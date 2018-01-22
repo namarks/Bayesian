@@ -1,0 +1,204 @@
+---
+title: "chapter 3"
+author: "Nick Marks"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+devtools::install_github("rmcelreath/rethinking")
+library(rethinking)
+library(tidyverse)
+options(scipen = 9)
+# data(homeworkch2)
+```
+
+
+
+```{r pg40}
+#Define grid
+p_grid <- seq(from=0,to=1, length.out = 1000)
+
+#define prior
+prior <- rep(1,1000)
+
+#compute likelihood at each value in grid
+likelihood <- dbinom(6, size=9, prob=p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+
+#standardize the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+
+#sample posterior
+sample <- sample(p_grid, prob = posterior, size = 10000, replace=TRUE)
+dens(sample)
+plot(sample)
+
+#probabilty world water proportion is less than 50%
+sum(posterior[p_grid < .5])
+sum(sample < .5) / 10000
+```
+
+
+# Easy practice
+```{r chapter 3 practice}
+p_grid <- seq(from=0,to=1,length.out = 1000)
+prior <- rep(1,1000)
+likelihood <- dbinom(6, size=9, prob=p_grid)
+posterior <- likelihood*prior
+posterior <- posterior/sum(posterior)
+set.seed(100)
+samples <- sample(p_grid, prob=posterior, size=10000, replace=TRUE)
+```
+
+How much posterior proability lies below p = 0.2? p = 0.8? p between .2 and .8?
+```{r 3E1}
+sum(posterior[p_grid < .2])
+sum(samples < 0.2) / 1e4
+sum(posterior[p_grid < .8])
+sum(samples < 0.8) / 1e4
+sum(posterior[p_grid < .8 & p_grid > .2])
+sum(samples > 0.2 & samples < 0.8) / 1e4
+```
+
+20% of the post prob lies below which value of p? above which value of p? min 66% interval? central 66% interval?
+```{r}
+quantile(samples, .2)
+quantile(samples, .8) - quantile(samples, .2)
+HPDI(samples, prob = .66)
+PI(samples, prob = .66)
+```
+
+
+#Medium practice
+8 water on 15 toses scenario
+```{r}
+p_grid <- seq(from=0,to=1,length.out = 1000)
+prior <- rep(1,1000)
+likelihood <- dbinom(8, size=15, prob=p_grid)
+posterior <- prior*likelihood
+posterior <- posterior / sum(posterior)
+samples <- sample(p_grid, prob=posterior, size = 1e4, replace=TRUE)
+HPDI(samples, p=.9)
+```
+
+Simulate parameter uncertainty for each value of samples
+```{r}
+w <- rbinom(1e4, size=15, prob=samples)
+simplehist(w)
+```
+
+#Hard
+```{r load data}
+data(homeworkch3)
+boy_births <- sum(birth1) + sum(birth2)
+births <- data_frame(boy = c(birth1, birth2)
+                     , birth_order = c(rep(1,length(birth1))
+                                       , rep(2,length(birth2))))
+```
+
+#### 1a. Posterior distribution of birth = boy (1)
+```{r}
+sample_size <- 10000
+model <- data_frame(p_grid = seq(0,1,length.out=sample_size)
+                    , prior = rep(1, sample_size))
+
+model <- model %>% 
+  mutate(likelihood = dbinom(sum(births$boy), size = nrow(births), prob = p_grid)
+         , posterior = prior*likelihood / sum(prior*likelihood))
+
+ggplot(model, aes(p_grid, posterior)) +
+  geom_line()
+
+p_grid[which.max(posterior)]
+```
+
+
+#### 1b. 50%, 89%, and 97% posterior density intervals
+```{r}
+model <- model %>% 
+  mutate(sample_grid = sample(p_grid, size = sample_size, replace = TRUE, prob = posterior))
+
+samples_hpdi <- HPDI(model$sample_grid, prob = c(.5,.90,.95))
+samples_hpdi
+
+model <- model %>% 
+  mutate(sample_cat = case_when(.$sample_grid >= samples_hpdi[3] & .$sample_grid <= samples_hpdi[4] ~ '50%'
+                                , .$sample_grid >= samples_hpdi[2] & .$sample_grid <= samples_hpdi[5] ~ '90%'
+                                , .$sample_grid >= samples_hpdi[1] & .$sample_grid <= samples_hpdi[6] ~ '95%'
+                                , TRUE ~ 'Outside'))
+
+ggplot(model, aes(sample_grid, fill = sample_cat)) +
+  geom_histogram(bins = 1000) +
+  scale_x_continuous(limits = c(0,1))
+```
+
+#### 1c.
+```{r}
+set.seed(20170428)
+boys_qa <- rethinking::map(
+    alist(
+        boys ~ dbinom(size=nrow(births),prob = pr.boy) ,  # binomial likelihood
+        pr.boy ~ dunif(0,1)    # uniform prior
+), data=list(boys = sum(births$boy)) )
+
+boys_mean <- precis(boys_qa)@output$Mean
+boys_sd <- precis(boys_qa)@output$StdDev
+
+set.seed(20170428)
+model <- model %>% 
+  mutate(sample_qa = rnorm(n=sample_size, mean=boys_mean, sd=boys_sd))
+
+ggplot(model,(aes(x=samples_qa))) +
+  geom_histogram(bins=1000) +
+  scale_x_continuous(limits=c(0,1))
+
+ggplot(model) +
+  geom_density(aes(x=sample_grid, color = "blue")) +
+  geom_density(aes(x=sample_qa, color = "red")) +
+  scale_color_manual(values = c("red","blue")
+                     , labels = c("Grid","Quadratic"))
+
+
+```
+
+#### 2a. Predict all births
+```{r}
+set.seed(20170428)
+model <- model %>% 
+  mutate(bsim = rbinom(sample_size, nrow(births), prob = sample_qa))
+
+ggplot(model, aes(x=bsim)) +
+  geom_density() +
+  geom_vline(xintercept = sum(births$boy), color = "red")
+
+```
+
+
+#### 2b. Predict first born boys
+```{r}
+set.seed(20170428)
+model <- model %>% 
+  mutate(b1sim = rbinom(sample_size, nrow(births %>% filter(birth_order == 1)), prob = sample_qa))
+
+ggplot(model, aes(x=b1sim)) +
+  geom_density() +
+  geom_vline(xintercept = sum(births$boy[births$birth_order==1]), color = "red")
+
+```
+
+#### 2b. Predict second borns with sisters
+```{r}
+b01 <- birth2[birth1==0]
+set.seed(20170428)  
+model <- model %>% 
+  mutate(b01sim = rbinom(sample_size, length(b01), prob = sample_qa))
+
+ggplot(model, aes(x=b01sim)) +
+  geom_density() +
+  geom_vline(xintercept = sum(b01), color = "red")
+
+```
